@@ -53,7 +53,7 @@ export function twoSum(nums: number[], target: number) {
         startIndex = i
         const currentNum = nums[i]
         const remaining = target - currentNum!
-        for (let j = 0; j< nums.length; j++) {
+        for (let j = 0; j < nums.length; j++) {
             if (i !== j && nums[j] === remaining) {
                 other = j
             }
@@ -61,12 +61,53 @@ export function twoSum(nums: number[], target: number) {
                 break;
             }
         }
-        if(other) {
+        if (other) {
             break;
         }
 
     }
     if (other) return [startIndex, other]
 
+    return []
+}
+
+export function twoSumFaster(nums: number[], target: number): number [] {
+    if (nums === null || nums === undefined) return []
+    if (target === null || target === undefined) return []
+
+    if (nums.length < 2) return []
+
+    if (nums.length === 2) {
+        if (nums[0] === null || nums[0] === undefined || nums[1] === null || nums[1] === undefined) return []
+        if ((nums[0] + nums[1]) === target) return [0, 1]
+        return []
+    }
+    const lookup = new Map<number, number>()
+    nums.forEach((element, index) => {
+        lookup.set(element, index)
+    })
+
+    // const {startIndex, endIndex}: { startIndex: number, endIndex: number } = nums.reduce((acc, currentValue, currentIndex) => {
+    //     if (acc.endIndex > 0) return acc;
+    //     const difference = Math.abs(target - currentValue)
+    //     if (lookup.get(difference) !== undefined) {
+    //         return {startIndex: currentIndex, endIndex: lookup.get(difference)!}
+    //     }
+    //     return acc
+    // }, {startIndex: 0, endIndex: 0})
+
+    let startIndex = 0, endIndex = 0;
+
+    for (let i = 0; i < nums.length; i++) {
+        let difference = Math.abs(target - nums[i]!)
+        let foundIndex = lookup.get(difference)
+        if (foundIndex !== undefined && foundIndex !== i) {
+            startIndex = i
+            endIndex = foundIndex
+            break;
+        }
+    }
+
+    if (endIndex > 0) return [startIndex, endIndex]
     return []
 }
