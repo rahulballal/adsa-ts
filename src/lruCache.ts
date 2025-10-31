@@ -115,3 +115,28 @@ export class LruCache {
     }
 }
 
+
+type DataNode<TKey, TValue> {
+    key: TKey
+    value: TValue
+    previous: DataNode<TKey, TValue> | null
+    next: DataNode<TKey, TValue> | null
+}
+
+
+export class LruCacheFaster {
+    private store = new Map<number, DataNode<number, number>>()
+
+    constructor(private maxSize: number){}
+
+    public get(key: number) {}
+    public set(key:number, value: number) {}
+    public printCacheContent() {
+        console.log(Object.fromEntries(this.store))
+    }
+
+    private insertAtHead(dataNode: DataNode<number, number>) {}
+    private moveToHead(dataNode: DataNode<number, number>){}
+    private removeTail(dataNode: DataNode<number, number>) {}
+}
+
