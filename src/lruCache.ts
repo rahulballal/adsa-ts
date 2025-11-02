@@ -36,82 +36,81 @@
  * At most 2 * 105 calls will be made to get and put.
  * */
 
+// O(n) time complexity for get and put operations
 export class LruCache {
-    private store = new Map<number, number>(); // to store the cache data
-    private hitCounter = new Map<number, number>; // to store counts
-    private counter: number = 0;
+  private store = new Map<number, number>() // to store the cache data
+  private hitCounter = new Map<number, number>() // to store counts
+  private counter: number = 0
 
-    constructor(private capacity: number) {
-    }
+  constructor(private capacity: number) {}
 
-    private evict(): number {
-        let lowestHitCount = -1
-        let lowestHitKey = -1
-        this.hitCounter.entries().forEach((pair) => {
-            const [k,hits] = pair
-            if (lowestHitKey === -1) {
-                lowestHitKey = k
-                lowestHitCount = hits
-            } else {
-                if (hits < lowestHitCount) {
-                    lowestHitCount = hits
-                    lowestHitKey = k
-                }
-            }
-        })
-        console.log(`🚮 ${lowestHitKey} evicted`)
-        return lowestHitKey
-    }
-
-    private increaseHitCounter(key: number) {
-        if (this.hitCounter.has(key)) {
-            this.hitCounter.set(key, this.hitCounter.get(key)! + 1)
-        } else {
-            this.hitCounter.set(key, 1)
+  private evict(): number {
+    let lowestHitCount = -1
+    let lowestHitKey = -1
+    this.hitCounter.entries().forEach((pair) => {
+      const [k, hits] = pair
+      if (lowestHitKey === -1) {
+        lowestHitKey = k
+        lowestHitCount = hits
+      } else {
+        if (hits < lowestHitCount) {
+          lowestHitCount = hits
+          lowestHitKey = k
         }
-    }
+      }
+    })
+    console.log(`🚮 ${lowestHitKey} evicted`)
+    return lowestHitKey
+  }
 
-    public getKeys() {
-        return this.store.keys().toArray()
+  private increaseHitCounter(key: number) {
+    if (this.hitCounter.has(key)) {
+      this.hitCounter.set(key, this.hitCounter.get(key)! + 1)
+    } else {
+      this.hitCounter.set(key, 1)
     }
+  }
 
-    public showContents() {
-        console.log("--store start--")
-        this.store.entries().forEach(entry => {
-            console.log(`Key => ${entry[0]}, Value => ${entry[1]}`)
-        })
-        console.log("--store end--")
-        console.log("--counter start--")
-        this.hitCounter.entries().forEach(entry => {
-            console.log(`Key => ${entry[0]}, Hits => ${entry[1]}`)
-        })
-        console.log("--counter end--")
-    }
+  public getKeys() {
+    return this.store.keys().toArray()
+  }
 
-    public put(key: number, value: number){
-        if (this.counter < this.capacity) {
-            this.store.set(key, value)
-            if(!this.hitCounter.has(key)) {
-                this.hitCounter.set(key, 1)
-            }
-            this.counter = this.counter + 1
-        } else {
-            const evicted = this.evict()
-            const yeeted = this.store.delete(evicted)
-            if(yeeted) {
-                console.log(`🚀 ${evicted}`)
-            }
-            this.store.set(key, value)
-        }
-    }
+  public showContents() {
+    console.log('--store start--')
+    this.store.entries().forEach((entry) => {
+      console.log(`Key => ${entry[0]}, Value => ${entry[1]}`)
+    })
+    console.log('--store end--')
+    console.log('--counter start--')
+    this.hitCounter.entries().forEach((entry) => {
+      console.log(`Key => ${entry[0]}, Hits => ${entry[1]}`)
+    })
+    console.log('--counter end--')
+  }
 
-    public get(key: number) {
-        const value = this.store.get(key)
-        if (value) {
-            this.increaseHitCounter(key)
-            return value
-        }
-        return -1
+  public put(key: number, value: number) {
+    if (this.counter < this.capacity) {
+      this.store.set(key, value)
+      if (!this.hitCounter.has(key)) {
+        this.hitCounter.set(key, 1)
+      }
+      this.counter = this.counter + 1
+    } else {
+      const evicted = this.evict()
+      const yeeted = this.store.delete(evicted)
+      if (yeeted) {
+        console.log(`🚀 ${evicted}`)
+      }
+      this.store.set(key, value)
     }
+  }
+
+  public get(key: number) {
+    const value = this.store.get(key)
+    if (value) {
+      this.increaseHitCounter(key)
+      return value
+    }
+    return -1
+  }
 }
-
