@@ -36,6 +36,7 @@
  * At most 2 * 105 calls will be made to get and put.
  * */
 
+// O(n) time complexity for get and put operations
 export class LruCache {
   private store = new Map<number, number>() // to store the cache data
   private hitCounter = new Map<number, number>() // to store counts
@@ -111,113 +112,5 @@ export class LruCache {
       return value
     }
     return -1
-  }
-}
-
-type DataNode<TKey, TValue> = {
-  key: TKey
-  value: TValue
-  previous: DataNode<TKey, TValue> | null
-  next: DataNode<TKey, TValue> | null
-}
-
-export class LruCacheFaster {
-  private store = new Map<number, DataNode<number, number>>()
-  private head: DataNode<number, number> | null = null
-  private tail: DataNode<number, number> | null = null
-
-  constructor(private maxSize: number) {}
-
-  public get(key: number) {
-    if (!this.store.has(key)) {
-      return null
-    }
-    const val = this.store.get(key)!
-    // move to head if exists in DLL
-    this.moveToHead(val) // refresh hit for usage scenario
-    return val.value
-  }
-  public set(key: number, value: number) {
-    if (this.store.has(key)) {
-      this.store.set(key, { key, value, next: null, previous: null })
-      this.moveToHead(this.store.get(key)!) // refresh hit for update scenario
-      return
-    }
-    if (this.store.size === this.maxSize) {
-      this.evict()
-    }
-    const newNode: DataNode<number, number> = {
-      key,
-      value,
-      next: null,
-      previous: null,
-    }
-    this.store.set(key, newNode)
-    this.insertAtHead(newNode)
-  }
-  public printCacheContent() {
-    console.log(Object.fromEntries(this.store))
-  }
-
-  private evict() {
-    if (this.tail) {
-      const lruKey = this.tail.key
-      this.removeNode(this.tail)
-      this.store.delete(lruKey)
-    }
-    return
-  }
-
-  private insertAtHead(dataNode: DataNode<number, number>) {
-    // 1. Point the new node's next to the current head
-    dataNode.next = this.head
-    dataNode.previous = null
-
-    // 2. Point the current head's prev to the new dataNode (if head exists)
-    if (this.head) {
-      this.head.previous = dataNode
-    }
-
-    // 3. Make the new dataNode the head
-    this.head = dataNode
-
-    // 4. If the list was empty, the new dataNode is also the tail
-    if (!this.tail) {
-      this.tail = dataNode
-    }
-  }
-  private moveToHead(node: DataNode<number, number>) {
-    if (node === this.head) {
-      // Already MRU
-      return
-    }
-
-    // 1. Remove it from its current position
-    this.removeNode(node)
-
-    // 2. Insert it at the head
-    this.insertAtHead(node)
-  }
-  private removeNode(node: DataNode<number, number>) {
-    const prev = node.previous
-    const next = node.next
-
-    if (prev) {
-      prev.next = next
-    } else {
-      // Node is the head
-      this.head = next
-    }
-
-    if (next) {
-      next.previous = prev
-    } else {
-      // Node is the tail
-      this.tail = prev
-    }
-
-    // Clean up pointers on the node being removed (optional but good practice)
-    node.previous = null
-    node.next = null
   }
 }
